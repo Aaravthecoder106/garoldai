@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+    gap: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid #333;
+    border-radius: 18px;
+    background: #111;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    outline: none;
+    min-height: 56px;
+}
+button {
+    border: none;
+    border-radius: 14px;
+    background: white;
+    color: black;
+    padding: 0 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+button:hover {
+    opacity: 0.9;
+}
+</style>
+</head>
+<body>
+    <div class="header">GROLD AI</div>
+
+    <div class="main">
+        <div class="hero" id="hero">
+            <h1>What is your agenda today?</h1>
+            <p>Ask anything to GROLD AI.</p>
+        </div>
+
+        <div id="chatBox"></div>
+    </div>
+
+    <div class="input-area">
+        <form class="form" id="chatForm">
+            <textarea id="message" placeholder="Message GROLD AI..." required></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+<script>
+const form = document.getElementById('chatForm');
+const messageInput = document.getElementById('message');
+const chatBox = document.getElementById('chatBox');
+const hero = document.getElementById('hero');
+
+function addMessage(text, className) {
+    const div = document.createElement('div');
+    div.className = 'message ' + className;
+    div.textContent = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const message = messageInput.value.trim();
+    if (!message) return;
+
+    hero.style.display = 'none';
+    chatBox.style.display = 'block';
+
+    addMessage('You: ' + message, 'user');
+    messageInput.value = '';
+
+    addMessage('GROLD AI is thinking...', 'ai');
+    const thinking = chatBox.lastChild;
+
+    const formData = new FormData();
+    formData.append('message', message);
+
+    const response = await fetch('/chat', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await response.json();
+    thinking.textContent = 'GROLD AI: ' + data.response;
+});
+</script>
+</body>
+</html>
